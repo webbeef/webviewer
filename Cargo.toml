@@ -1,15 +1,15 @@
 [package]
-name = "browser"
+name = "webviewer"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "browsershell"
+name = "webviewershell"
 path = "lib.rs"
 bench = false
 
 [[bin]]
-name = "browser"
+name = "webviewer"
 path = "main.rs"
 bench = false
 

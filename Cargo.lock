@@ -519,54 +519,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "browser"
-version = "0.1.0"
-dependencies = [
- "android_logger",
- "arboard",
- "backtrace",
- "cc",
- "cfg-if",
- "egui",
- "egui-winit",
- "egui_glow",
- "env_filter",
- "euclid",
- "getopts",
- "gilrs",
- "gl_generator",
- "gleam",
- "glow 0.13.1",
- "hilog",
- "image 0.24.9",
- "ipc-channel",
- "jni",
- "keyboard-types",
- "lazy_static",
- "libc",
- "libloading",
- "libservo",
- "log",
- "napi-derive-ohos",
- "napi-ohos",
- "ohos-sys",
- "raw-window-handle",
- "serde_json",
- "servo-media",
- "servo_allocator",
- "shellwords",
- "sig",
- "surfman",
- "tinyfiledialogs",
- "url",
- "vergen",
- "webxr",
- "windows-sys 0.59.0",
- "winit",
- "winres",
-]
-
-[[package]]
 name = "build-parallel"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7785,6 +7737,54 @@ dependencies = [
  "serde",
  "surfman",
  "webrender_api",
+]
+
+[[package]]
+name = "webviewer"
+version = "0.1.0"
+dependencies = [
+ "android_logger",
+ "arboard",
+ "backtrace",
+ "cc",
+ "cfg-if",
+ "egui",
+ "egui-winit",
+ "egui_glow",
+ "env_filter",
+ "euclid",
+ "getopts",
+ "gilrs",
+ "gl_generator",
+ "gleam",
+ "glow 0.13.1",
+ "hilog",
+ "image 0.24.9",
+ "ipc-channel",
+ "jni",
+ "keyboard-types",
+ "lazy_static",
+ "libc",
+ "libloading",
+ "libservo",
+ "log",
+ "napi-derive-ohos",
+ "napi-ohos",
+ "ohos-sys",
+ "raw-window-handle",
+ "serde_json",
+ "servo-media",
+ "servo_allocator",
+ "shellwords",
+ "sig",
+ "surfman",
+ "tinyfiledialogs",
+ "url",
+ "vergen",
+ "webxr",
+ "windows-sys 0.59.0",
+ "winit",
+ "winres",
 ]
 
 [[package]]

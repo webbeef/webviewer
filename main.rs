@@ -23,7 +23,7 @@
 fn main() {
     cfg_if::cfg_if! {
         if #[cfg(not(any(target_os = "android", target_env = "ohos")))] {
-            browsershell::main()
+            webviewershell::main()
         } else {
             println!(
                 "Cannot run the servoshell `bin` executable on platforms such as \
