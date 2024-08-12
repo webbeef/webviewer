@@ -5,7 +5,9 @@
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::env;
 
 use gl_generator::{Api, Fallbacks, Profile, Registry};
 use vergen::EmitBuilder;
@@ -20,12 +22,65 @@ fn generate_egl_bindings(out_dir: &Path) {
     println!("cargo:rustc-link-lib=EGL");
 }
 
+fn find_python() -> String {
+    env::var("PYTHON3").ok().unwrap_or_else(|| {
+        let candidates = if cfg!(windows) {
+            ["python.exe", "python"]
+        } else {
+            ["python3", "python"]
+        };
+        for &name in &candidates {
+            if Command::new(name)
+                .arg("--version")
+                .output()
+                .ok()
+                .map_or(false, |out| out.status.success())
+            {
+                return name.to_owned();
+            }
+        }
+        panic!(
+            "Can't find python (tried {})! Try fixing PATH or setting the PYTHON3 env var",
+            candidates.join(", ")
+        )
+    })
+}
+
+// Generate the WebIDL bindings with Servo's codegen.
+fn generate_webidl_bindings() {
+    let servo_path = if let Some(servo_env_path) = env::var_os("SERVO_PATH") {
+        servo_env_path.into_string().unwrap()
+    } else {
+        panic!("Set SERVO_PATH to the root of your servo repository to build local webidl bindings.");
+    };
+
+    // TODO: Don't hardcode..
+    let cwd = env::current_dir().unwrap();
+    let style_out_dir = PathBuf::from(format!("{}/target/release/build/style-712769e00544c534/out/css-properties.json", cwd.display()));
+
+    let out_dir = PathBuf::from(env::var_os("OUT_DIR").unwrap());
+
+    let status = Command::new(find_python())
+        .arg(format!("{}/components/script/dom/bindings/codegen/run.py", servo_path))
+        .arg(style_out_dir)
+        .arg(cwd.join("webidls"))
+        .arg(&out_dir)
+        .status()
+        .unwrap();
+    if !status.success() {
+        std::process::exit(1)
+    }
+}
+
+
 fn main() -> Result<(), Box<dyn Error>> {
+    generate_webidl_bindings();
+
     println!("cargo::rustc-check-cfg=cfg(servo_production)");
     println!("cargo::rustc-check-cfg=cfg(servo_do_not_use_in_production)");
     // Cargo does not expose the profile name to crates or their build scripts,
     // but we can extract it from OUT_DIR and set a custom cfg() ourselves.
-    let out = std::env::var("OUT_DIR")?;
+    let out = env::var("OUT_DIR")?;
     let out = Path::new(&out);
     let krate = out.parent().unwrap();
     let build = krate.parent().unwrap();
@@ -43,8 +98,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Note: We can't use `#[cfg(windows)]`, since that would check the host platform
     // and not the target platform
-    let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
-    let target_env = std::env::var("CARGO_CFG_TARGET_ENV").unwrap();
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
+    let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap();
 
     if target_os == "windows" {
         #[cfg(windows)]
